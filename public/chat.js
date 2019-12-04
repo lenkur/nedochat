@@ -1,15 +1,13 @@
 $(document).ready(function() {
-    console.log("resizing..");
     $(".chatroom").height(($('div.container-fluid').height() - $("nav").height() - $("footer").height()) * 0.85);
 });
 $(window).on("resize", function() {
-    console.log("resizing..");
     $(".chatroom").height(($('div.container-fluid').height() - $("nav").height() - $("footer").height()) * 0.85);
 });
 
 $(function() {
     //make connection
-    var socket = io.connect('http://localhost:3000');
+    var socket = io.connect();
 
     //buttons & inputs
     var message = $("#message");
