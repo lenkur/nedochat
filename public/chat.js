@@ -7,7 +7,7 @@ $(window).on("resize", function() {
 
 $(function() {
     //make connection
-    var socket = io.connect();
+    var socket = io.connect('http://localhost:3000');
 
     //buttons & inputs
     var message = $("#message");
@@ -19,7 +19,6 @@ $(function() {
 
     //Emit a username 
     send_username_password.click(function() {
-        console.log(username.val() + $("#password").val());
         if (username.val() == null || username.val() == "" || $("#password").val() == null || $("#password").val() == "")
             alert("Wrong input!");
         else {
@@ -43,7 +42,6 @@ $(function() {
 
     //Emit a message
     send_message.click(function() {
-    	console.log(message=="");
         var d = new Date();
         var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
         socket.emit('new_message', {
@@ -55,10 +53,8 @@ $(function() {
 
     //Listen on new_message
     socket.on('new_message', (data) => {
-        console.log(data);
         chatroom.append("<p class='message'>\
         	<small><span class='text-muted font-weight-light'>" + data.time + "</span></small> " +
             data.username + ": <span class='w-100 inline'>" + data.message + "</span></p>");
     });
-
 });

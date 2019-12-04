@@ -1,7 +1,6 @@
 const express = require('express');
-const port = process.env.PORT || 8000;
 const app = express();
-
+const port = process.env.PORT || 8000;
 //set the template engine ejs
 app.set('view engine', 'ejs');
 
@@ -13,8 +12,8 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-//Listen on port 
-server = app.listen(port);
+//Listen on port 3000
+server = app.listen(3000);
 
 //socket.io instalation
 const io = require("socket.io")(server);
