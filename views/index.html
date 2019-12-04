@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"> </script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"> </script>
+    <script src="chat.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <form class="bg-light">
+            <div class="form-group">
+                <label for="inputUsername">Username</label>
+                <input type="email" class="form-control" id="inputUsername" aria-describedby="emailHelp" placeholder="Username">
+                <small id="emailHelp" class="form-text text-muted">This will be your username</small>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="change_username change_password">Submit</button>
+        </form>
+        <div class="w-100 chatroom" id="chatroom">
+        </div>
+        <div class="input-group mb-3">
+            <input type="text" id="#message" class="form-control" placeholder="Enter your message" aria-label="Message" aria-describedby="button-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2 send_message">Button</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
