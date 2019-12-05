@@ -24,10 +24,6 @@ app.use(express.static('public'));
 //routes
 app.get('/', (req, res) => {
     res.render('index');
-    //mysql
-    connection.query("SELECT * FROM messages", function(error, rows, fields) {
-        console.log(rows);
-    });
 });
 
 //Listen on port
@@ -61,9 +57,25 @@ io.on('connection', (socket) => {
         console.log(data);
         //broadcast the new message
         io.sockets.emit('new_message', { username: socket.username, time: data.time, message: data.message });
-        connection.query("INSERT INTO messages(author, time, content) VALUES( '" + socket.username + "', '" + data.time + "', '" + data.message + "')");
-        connection.query("SELECT * FROM messages", function(error, rows, fields) {
-            console.log(rows);
+        connection.query("INSERT INTO messages(username, t, message) VALUES( '" + socket.username + "', '" + data.time + "', '" + data.message + "')");
+        // connection.query("SELECT * FROM messages", function(error, rows, fields) {
+        //     console.log(rows);
+        // });
+    });
+    //listen on get_messages
+    socket.on('get_messages', (data) => {
+        // console.log(data);
+        var history = [];
+        var sql = 'SELECT * FROM messages WHERE t<=?';
+        connection.query(sql, [data.time], (error, results, fields) => {
+            if (error) {
+                return console.error(error.message);
+            }
+            console.log(results[0]);
+            for (var i of results) {
+                history.push({ username: i.username, time: i.t, message: i.message });
+            }
+            socket.emit('get_messages', history);
         });
     });
 });

@@ -8,7 +8,7 @@ $(window).on("resize", function() {
 $(function() {
     //make connection
     var socket = io.connect();
-
+    var start = false;
     //buttons & inputs
     var message = $("#message");
     var username = $("#username");
@@ -16,6 +16,15 @@ $(function() {
     var send_message = $("#send_message");
     var send_username_password = $("#send_username_password");
     var chatroom = $("#chatroom");
+    var d = new Date();
+    var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+
+    if (!start) {
+        socket.emit('get_messages', {
+            time: time
+        });
+        start = true;
+    }
 
     //Emit a username 
     send_username_password.click(function() {
@@ -44,9 +53,8 @@ $(function() {
 
     //Emit a message
     send_message.click(function() {
-       if(message.val() != '') {
-            var d = new Date();
-            var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        if (message.val() != '') {
+            time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes()+ ':' + (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
             socket.emit('new_message', {
                 message: message.val(),
                 time: time
@@ -60,5 +68,15 @@ $(function() {
         chatroom.append("<p class='message'>\
         	<small><span class='text-muted font-weight-light'>" + data.time + "</span></small> " +
             data.username + ": <span class='w-100 inline'>" + data.message + "</span></p>");
+        chatroom.scrollTop(chatroom.prop("scrollHeight"));
+    });
+
+    //Listen on get_messages
+    socket.on('get_messages', (data) => {
+        for (var i of data)
+            chatroom.append("<p class='message'>\
+        	<small><span class='text-muted font-weight-light'>" + i.time + "</span></small> " +
+                i.username + ": <span class='w-100 inline'>" + i.message + "</span></p>");
+        chatroom.scrollTop(chatroom.prop("scrollHeight"));
     });
 });
