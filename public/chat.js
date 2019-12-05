@@ -7,34 +7,36 @@ $(window).on("resize", function() {
 
 $(function() {
     //make connection
-    var socket = io.connect('http://localhost:3000');
+    var socket = io.connect();
 
     //buttons & inputs
     var message = $("#message");
     var username = $("#username");
-    var password = "";
+    // var password = "";
     var send_message = $("#send_message");
     var send_username_password = $("#send_username_password");
     var chatroom = $("#chatroom");
 
     //Emit a username 
     send_username_password.click(function() {
-        if (username.val() == null || username.val() == "" || $("#password").val() == null || $("#password").val() == "")
+        if (username.val() == null || username.val() == ""
+            // || $("#password").val() == null || $("#password").val() == ""
+        )
             alert("Wrong input!");
         else {
-            if (password == "") {
-                password = $("#password").val();
-                socket.emit('change_username', {
-                    username: username.val(),
-                    password: password
-                });
-            } else {
-                if (password != $("#password").val()) alert("Wrong password!");
-                else
-                    socket.emit('change_username', {
-                        username: username.val()
-                    });
-            };
+            // if (password == "") {
+            //     password = $("#password").val();
+            //     socket.emit('change_username', {
+            //         username: username.val(),
+            //         password: password
+            //     });
+            // } else {
+            //     if (password != $("#password").val()) alert("Wrong password!");
+            //     else
+            socket.emit('change_username', {
+                username: username.val()
+            });
+            // };
         }
         $("#username").val('');
         $("#password").val('');
@@ -42,13 +44,15 @@ $(function() {
 
     //Emit a message
     send_message.click(function() {
-        var d = new Date();
-        var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-        socket.emit('new_message', {
-            message: message.val(),
-            time: time
-        });
-        message.val('');
+       if(message.val() != '') {
+            var d = new Date();
+            var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+            socket.emit('new_message', {
+                message: message.val(),
+                time: time
+            });
+            message.val('');
+        }
     });
 
     //Listen on new_message
