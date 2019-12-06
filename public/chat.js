@@ -9,6 +9,7 @@ $(function() {
     //make connection
     var socket = io.connect();
     var start = false;
+    var admin = false;
     //buttons & inputs
     var message = $("#message");
     var username = $("#username");
@@ -20,9 +21,7 @@ $(function() {
     var time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
 
     if (!start) {
-        socket.emit('get_messages', {
-            time: time
-        });
+        socket.emit('get_messages', time);
         start = true;
     }
 
@@ -42,10 +41,34 @@ $(function() {
             // } else {
             //     if (password != $("#password").val()) alert("Wrong password!");
             //     else
-            socket.emit('change_username', {
-                username: username.val()
-            });
-            // };
+
+            if (username.val() == "Admin") {
+                $('#passwordModal').modal('show');
+                var adminPassword = $('input#password').val();
+                $('#passwordButton').on('click', function() {
+                    if (adminPassword == "postironia") {
+                        socket.emit('change_username', {
+                            username: "Admin",
+                            admin: true
+                        });
+                        admin = true;
+                    }
+                    $('.ch').removeClass('d-none');
+                });
+                $('#deleteMessages').on('click', function() {
+                    var toDel = [];
+                    var list = $(':checked').map(function() {
+                        toDel.push($(this).parents('p').data().id);
+                    });
+                    console.log(toDel);
+                    socket.emit('del_messages', toDel);
+                });
+            } else {
+                socket.emit('change_username', {
+                    username: username.val()
+                });
+                $('.ch').addClass('d-none');
+            }
         }
         $("#username").val('');
         $("#password").val('');
@@ -54,7 +77,8 @@ $(function() {
     //Emit a message
     send_message.click(function() {
         if (message.val() != '') {
-            time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes()+ ':' + (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+            d = new Date();
+            time = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes() + ':' + (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
             socket.emit('new_message', {
                 message: message.val(),
                 time: time
@@ -65,18 +89,31 @@ $(function() {
 
     //Listen on new_message
     socket.on('new_message', (data) => {
-        chatroom.append("<p class='message'>\
-        	<small><span class='text-muted font-weight-light'>" + data.time + "</span></small> " +
+        chatroom.append("<p class='message' data-id='" + data.id + "'>\
+            	<span class='form-check form-check-inline ch'>\
+   				<input type='checkbox' class='form-check-input'> </span>\
+        		<small><span class='text-muted font-weight-light'>" + data.time + "</span></small> " +
             data.username + ": <span class='w-100 inline'>" + data.message + "</span></p>");
         chatroom.scrollTop(chatroom.prop("scrollHeight"));
+        if (!admin) $('.ch').addClass('d-none');
+        else $('.ch').removeClass('d-none');
     });
 
     //Listen on get_messages
     socket.on('get_messages', (data) => {
+        chatroom.empty();
         for (var i of data)
-            chatroom.append("<p class='message'>\
-        	<small><span class='text-muted font-weight-light'>" + i.time + "</span></small> " +
+            chatroom.append("<p class='message' data-id='" + i.id + "'>\
+            	<span class='form-check form-check-inline ch'>\
+   				<input type='checkbox' class='form-check-input'> </span>\
+        		<small><span class='text-muted font-weight-light'>" + i.time + "</span></small> " +
                 i.username + ": <span class='w-100 inline'>" + i.message + "</span></p>");
         chatroom.scrollTop(chatroom.prop("scrollHeight"));
+        if (!admin) $('.ch').addClass('d-none');
+        else $('.ch').removeClass('d-none');
     });
 });
+
+function changeAppearance(admin) {
+
+}
